@@ -4,14 +4,17 @@ import (
 	"context"
 	"time"
 
+	"github.com/ginkgo1981/nft-syncer/internal/biz"
 	"github.com/ginkgo1981/nft-syncer/internal/data"
 	"github.com/ginkgo1981/nft-syncer/internal/logger"
+	ckbTypes "github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
 
 type SyncService struct {
-	logger *logger.Logger
-	client *data.CkbNodeClient
-	status chan struct{}
+	checkInfoUsecase *biz.CheckInfoUsecase
+	logger           *logger.Logger
+	client           *data.CkbNodeClient
+	status           chan struct{}
 }
 
 func (s *SyncService) Start(ctx context.Context) error {
@@ -29,22 +32,59 @@ func (s *SyncService) Start(ctx context.Context) error {
 
 				return
 			case <-time.After(interval):
-				s.sync(ctx)
+				s.process(ctx)
 			}
 		}
 	}()
 	return nil
 }
 
-func (s *SyncService) sync(ctx context.Context) error {
+func (s *SyncService) process(ctx context.Context) error {
+	checkInfo, err := s.checkInfoUsecase.FindLastCheckInfo(ctx)
+	if err != nil {
+		s.logger.Errorf(ctx, "failed to find last check info: %v", err)
+		return err
+	}
+
 	tipBlockNumber, err := s.client.Rpc.GetTipBlockNumber(ctx)
 	if err != nil {
 		s.logger.Errorf(ctx, "failed to get tip block number: %v", err)
 		return err
 	}
 
-	s.logger.Infof(ctx, "current block number: %v", tipBlockNumber)
+	if checkInfo.BlockNumber > tipBlockNumber {
+		return nil
+	}
+
+	targetBlockNumber := checkInfo.BlockNumber
+	if targetBlockNumber > tipBlockNumber {
+		targetBlockNumber = tipBlockNumber
+	}
+
+	targetBlock, err := s.client.Rpc.GetBlockByNumber(ctx, targetBlockNumber)
+	if err != nil {
+		s.logger.Errorf(ctx, "failed to get block by number: %v", err)
+		return err
+	}
+
+	checkInfo.BlockNumber = targetBlock.Header.Number + 1
+	checkInfo.BlockHash = targetBlock.Header.Hash.String()[2:]
+
+	err = s.SyncBlock(ctx, targetBlock, *checkInfo)
+	if err != nil {
+		s.logger.Errorf(ctx, "failed to sync block: %v", err)
+		return err
+	}
+
 	return nil
+}
+
+func (c *SyncService) SyncBlock(ctx context.Context, block *ckbTypes.Block, checkInfo biz.CheckInfo) error {
+	for index, tx := range block.Transactions {
+		c.logger.Infof(ctx, "tx index: %d, tx: %s", index, tx.Hash)
+	}
+
+	return c.checkInfoUsecase.CreateCheckInfo(ctx, &checkInfo)
 }
 
 func (s *SyncService) Stop(ctx context.Context) error {
@@ -52,9 +92,10 @@ func (s *SyncService) Stop(ctx context.Context) error {
 	return nil
 }
 
-func NewSyncService(logger *logger.Logger, client *data.CkbNodeClient) *SyncService {
+func NewSyncService(checkInfoUsecase *biz.CheckInfoUsecase, logger *logger.Logger, client *data.CkbNodeClient) *SyncService {
 	return &SyncService{
-		logger: logger,
-		client: client,
+		checkInfoUsecase: checkInfoUsecase,
+		logger:           logger,
+		client:           client,
 	}
 }

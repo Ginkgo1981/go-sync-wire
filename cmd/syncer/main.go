@@ -13,12 +13,12 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func newApp(logger *logger.Logger, service *service.SyncService, m *data.DBMigration) *app.App {
+func newApp(logger *logger.Logger, syncSvr *service.SyncService, m *data.DBMigration) *app.App {
 	return app.NewApp(
 		app.Name("nft-entries-syncer"),
 		app.Version("0.0.1"),
 		app.Logger(logger),
-		app.Services(service), app.Migration(m))
+		app.Services(syncSvr), app.Migration(m))
 }
 
 func main() {

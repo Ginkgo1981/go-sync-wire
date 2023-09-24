@@ -5,7 +5,7 @@ import (
 
 	"github.com/ginkgo1981/nft-syncer/internal/config"
 	"github.com/ginkgo1981/nft-syncer/internal/logger"
-	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/rpc"
 )
 
 type CkbNodeClient struct {
