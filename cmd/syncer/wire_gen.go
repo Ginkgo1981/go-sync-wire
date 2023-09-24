@@ -15,7 +15,7 @@ import (
 
 // Injectors from wire.go:
 
-func initApp(database *config.Database, loggerLogger *logger.Logger) (*app.App, func(), error) {
+func initApp(database *config.Database, ckbNode *config.CkbNode, loggerLogger *logger.Logger) (*app.App, func(), error) {
 	dataData, cleanup, err := data.NewData(database, loggerLogger)
 	if err != nil {
 		return nil, nil, err

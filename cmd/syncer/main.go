@@ -33,6 +33,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("init.setupDataConfig err: %v", err)
 	}
+	ckbNodeConf, err := setupCkbNodeConf(conf)
 	if err != nil {
 		log.Fatalf("init.setupCkbNodeConfig err: %v", err)
 	}
@@ -44,7 +45,7 @@ func main() {
 		LocalTime:  true,
 	}, "", log.LstdFlags)
 
-	app, cleanup, err := initApp(&dataConf.Database, logger)
+	app, cleanup, err := initApp(&dataConf.Database, ckbNodeConf, logger)
 	if err != nil {
 		panic(err)
 	}
@@ -65,4 +66,10 @@ func setupDataConf(conf *config.Config) (*config.Data, error) {
 	var dataConf *config.Data
 	err := conf.ReadSection("data", &dataConf)
 	return dataConf, err
+}
+
+func setupCkbNodeConf(conf *config.Config) (*config.CkbNode, error) {
+	var ckbNodeConf *config.CkbNode
+	err := conf.ReadSection("ckb_node", &ckbNodeConf)
+	return ckbNodeConf, err
 }

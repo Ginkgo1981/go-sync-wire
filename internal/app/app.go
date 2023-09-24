@@ -89,6 +89,7 @@ func (a *App) Run() error {
 		for {
 			select {
 			case <-ctx.Done():
+				a.options.logger.Infof(context.TODO(), "app done: %v, %v, %v, %v", a.ID(), a.Name(), a.Version(), a.options.sigs)
 				return ctx.Err()
 			case <-c:
 				err := a.Stop()
@@ -99,6 +100,7 @@ func (a *App) Run() error {
 			}
 		}
 	})
+	a.options.logger.Infof(context.TODO(), "app: %v, %v, %v, %v", a.ID(), a.Name(), a.Version(), a.options.sigs)
 	if err := eg.Wait(); err != nil && !errors.Is(err, context.Canceled) {
 		return err
 	}

@@ -48,3 +48,8 @@ func (s *Config) ReadSection(k string, v interface{}) error {
 
 	return nil
 }
+
+type CkbNode struct {
+	RpcUrl string `mapstructure:"rpc_url"`
+	Mode   string `mapstructure:"mode"`
+}

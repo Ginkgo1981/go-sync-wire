@@ -11,6 +11,6 @@ import (
 	"github.com/google/wire"
 )
 
-func initApp(*config.Database, *logger.Logger) (*app.App, func(), error) {
+func initApp(*config.Database, *config.CkbNode, *logger.Logger) (*app.App, func(), error) {
 	panic(wire.Build(data.ProviderSet, newApp))
 }
