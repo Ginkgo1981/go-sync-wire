@@ -30,8 +30,9 @@ func initApp(database *config.Database, ckbNode *config.CkbNode, loggerLogger *l
 		return nil, nil, err
 	}
 	syncService := service.NewSyncService(checkInfoUsecase, loggerLogger, ckbNodeClient)
+	checkInfoCleanerService := service.NewCheckInfoCleanerService(checkInfoUsecase, loggerLogger)
 	dbMigration := data.NewDBMigration(dataData, loggerLogger)
-	appApp := newApp(loggerLogger, syncService, dbMigration)
+	appApp := newApp(loggerLogger, syncService, checkInfoCleanerService, dbMigration)
 	return appApp, func() {
 		cleanup()
 	}, nil
