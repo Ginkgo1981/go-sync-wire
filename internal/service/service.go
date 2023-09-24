@@ -6,7 +6,7 @@ import (
 	"github.com/google/wire"
 )
 
-var ProviderSet = wire.NewSet()
+var ProviderSet = wire.NewSet(NewSyncService)
 
 type Service interface {
 	Start(context.Context) error
