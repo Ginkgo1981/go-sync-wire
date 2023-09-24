@@ -1,2 +1,0 @@
-2023/09/24 10:55:38 {"callers":["/Users/jian/Desktop/go-syncer-jian/internal/app/app.go: 68 github.com/ginkgo1981/nft-syncer/internal/app.(*App).Run"],"level":"error","message":"DB Migration failed: open /Users/jian/Desktop/go-syncer-jian/internal/db/migrations/.: no such file or directory","time":1695545738985015000}
-2023/09/24 10:55:38 {"callers":["/Users/jian/Desktop/go-syncer-jian/internal/data/data.go: 47 github.com/ginkgo1981/nft-syncer/internal/data.NewData.func1"],"level":"info","message":"successfully closed the database","time":1695545738985449000}
