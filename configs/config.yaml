@@ -1,0 +1,16 @@
+data:
+  database:
+    driver: mysql
+    dsn: root:wa56IWLIJGeKL4Lf2A8@tcp(127.0.0.1:13306)/nft_sync_development?charset=utf8mb4&parseTime=True&multiStatements=true
+    max_idle_conns: 10
+    max_open_conns: 20
+    conn_max_lifetime: 10s
+app:
+  log_save_path: ../../storage/logs
+  log_file_name: app
+  log_file_ext: .log
+
+ckb_node:
+  rpc_url: https://testnet.ckb.dev/rpc
+  mode: testnet
+
